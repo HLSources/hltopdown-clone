@@ -1050,6 +1050,10 @@ void PM_WalkMove ()
 	fmove = pmove->cmd.forwardmove;
 	smove = pmove->cmd.sidemove;
 	
+
+	fmove = (pmove->cmd.forwardmove * (cos(pmove->cmd.viewangles[YAW] * (M_PI / 180)))) - (pmove->cmd.sidemove * (sin(pmove->cmd.viewangles[YAW] * (M_PI / 180))));
+	smove = (pmove->cmd.forwardmove * (sin(pmove->cmd.viewangles[YAW] * (M_PI / 180)))) + (pmove->cmd.sidemove * (cos(pmove->cmd.viewangles[YAW] * (M_PI / 180))));
+
 	// Zero out z components of movement vectors
 	pmove->forward[2] = 0;
 	pmove->right[2]   = 0;
@@ -1061,6 +1065,7 @@ void PM_WalkMove ()
 		wishvel[i] = pmove->forward[i]*fmove + pmove->right[i]*smove;
 	
 	wishvel[2] = 0;             // Zero out z part of velocity
+
 
 	VectorCopy (wishvel, wishdir);   // Determine maginitude of speed of move
 	wishspeed = VectorNormalize(wishdir);

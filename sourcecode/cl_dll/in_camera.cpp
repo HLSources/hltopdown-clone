@@ -223,7 +223,6 @@ void CL_DLLEXPORT CAM_Think(void)
 	cam_idealdist->value -= (cam_idealdist->value - (trace->endpos.z - realOrigin.z)) * (.25);
 
 
-	if (trace->ent)
 
 	camAngles[PITCH] = cam_idealpitch->value;
 	camAngles[YAW] = cam_idealyaw->value;

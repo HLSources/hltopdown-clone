@@ -642,8 +642,8 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 
 		}
 
-		pparams->vieworg[0] += cos(pparams->viewangles[YAW] * (3.141592653589 / 180)) * 10;
-		pparams->vieworg[1] += sin(pparams->viewangles[YAW] * (3.141592653589 / 180)) * 10;
+		pparams->vieworg[0] += cos(pparams->viewangles[YAW] * (M_PI / 180)) * 10;
+		pparams->vieworg[1] += sin(pparams->viewangles[YAW] * (M_PI / 180)) * 10;
 	}
 	
 	// Give gun our viewangles
