@@ -29,7 +29,7 @@
 #define MOUSE_BUTTON_COUNT 5
 
 // Set this to 1 to show mouse cursor.  Experimental
-int	g_iVisibleMouse = 0;
+int	g_iVisibleMouse = 1;
 
 extern cl_enginefunc_t gEngfuncs;
 extern int iMouseInUse;
@@ -381,8 +381,8 @@ void CL_DLLEXPORT IN_MouseEvent (int mstate)
 {
 	int		i;
 
-	if ( iMouseInUse || g_iVisibleMouse )
-		return;
+	//if ( iMouseInUse || g_iVisibleMouse )
+	//	return;
 
 	// perform button actions
 	for (i=0 ; i<mouse_buttons ; i++)
