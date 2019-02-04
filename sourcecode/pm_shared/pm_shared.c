@@ -1329,16 +1329,23 @@ void PM_WaterMove (void)
 	vec3_t  temp;
 	pmtrace_t	trace;
 
-	float speed, newspeed, addspeed, accelspeed;
+	float speed, newspeed, addspeed, accelspeed; 
+
+	float fmove = pmove->cmd.forwardmove;
+	float smove = pmove->cmd.sidemove;
+
+	fmove = (pmove->cmd.forwardmove * (cos(pmove->cmd.viewangles[YAW] * (M_PI / 180)))) - (pmove->cmd.sidemove * (sin(pmove->cmd.viewangles[YAW] * (M_PI / 180))));
+	smove = (pmove->cmd.forwardmove * (sin(pmove->cmd.viewangles[YAW] * (M_PI / 180)))) + (pmove->cmd.sidemove * (cos(pmove->cmd.viewangles[YAW] * (M_PI / 180))));
 
 //
 // user intentions
 //
 	for (i=0 ; i<3 ; i++)
-		wishvel[i] = pmove->forward[i]*pmove->cmd.forwardmove + pmove->right[i]*pmove->cmd.sidemove;
+		wishvel[i] = pmove->forward[i] * fmove + pmove->right[i] * smove;
+
 
 	// Sinking after no other movement occurs
-	if (!pmove->cmd.forwardmove && !pmove->cmd.sidemove && !pmove->cmd.upmove)
+	if (!fmove && !smove && !pmove->cmd.upmove)
 		wishvel[2] -= 60;		// drift towards bottom
 	else  // Go straight up by upmove amount.
 		wishvel[2] += pmove->cmd.upmove;
@@ -1426,7 +1433,10 @@ void PM_AirMove (void)
 	// Copy movement amounts
 	fmove = pmove->cmd.forwardmove;
 	smove = pmove->cmd.sidemove;
-	
+
+	fmove = (pmove->cmd.forwardmove * (cos(pmove->cmd.viewangles[YAW] * (M_PI / 180)))) - (pmove->cmd.sidemove * (sin(pmove->cmd.viewangles[YAW] * (M_PI / 180))));
+	smove = (pmove->cmd.forwardmove * (sin(pmove->cmd.viewangles[YAW] * (M_PI / 180)))) + (pmove->cmd.sidemove * (cos(pmove->cmd.viewangles[YAW] * (M_PI / 180))));
+
 	// Zero out z components of movement vectors
 	pmove->forward[2] = 0;
 	pmove->right[2]   = 0;
