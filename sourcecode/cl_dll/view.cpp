@@ -54,6 +54,8 @@ extern engine_studio_api_t IEngineStudio;
 
 extern kbutton_t	in_mlook;
 
+extern float mouse_pos_extern[2];
+
 /*
 The view is allowed to move slightly from it's true position for bobbing,
 but if it exceeds 8 pixels linear distance (spherical, not box), the list of
@@ -642,8 +644,9 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 
 		}
 
-		pparams->vieworg[0] += cos(pparams->viewangles[YAW] * (M_PI / 180)) * 10;
-		pparams->vieworg[1] += sin(pparams->viewangles[YAW] * (M_PI / 180)) * 10;
+
+		pparams->vieworg[0] -= mouse_pos_extern[1] * .05;
+		pparams->vieworg[1] -= mouse_pos_extern[0] * .05;
 	}
 	
 	// Give gun our viewangles

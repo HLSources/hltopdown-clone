@@ -28,6 +28,8 @@
 
 #define MOUSE_BUTTON_COUNT 5
 
+float mouse_pos_extern[2];
+
 // Set this to 1 to show mouse cursor.  Experimental
 int	g_iVisibleMouse = 1;
 
@@ -547,10 +549,13 @@ void IN_MouseMove ( float frametime, usercmd_t *cmd)
 
 		//viewangles[YAW] -= m_yaw->value * mouse_x;
 
-		POINT		mouse_pos;
+		POINT mouse_pos;
 		GetCursorPos(&mouse_pos);
 		mouse_pos.x -= ScreenWidth / 2;
 		mouse_pos.y -= ScreenHeight / 2;
+
+		mouse_pos_extern[0] = mouse_pos.x;
+		mouse_pos_extern[1] = mouse_pos.y;
 
 		viewangles[YAW] = -atan2(double(mouse_pos.y * (M_PI / 180)), double(mouse_pos.x * (M_PI / 180))) * (180/M_PI) - 90; //I don't know why I have to negate the value and subtract 90, it just works that way.
 
