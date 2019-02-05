@@ -28,6 +28,8 @@ extern cl_enginefunc_t gEngfuncs;
 
 extern vec3_t realOrigin;
 
+extern float realViewOrg[3];
+
 //-------------------------------------------------- Constants
 
 #define CAM_DIST_DELTA 1.0
@@ -199,30 +201,14 @@ void CL_DLLEXPORT CAM_Think(void)
 #endif
 
 	pmtrace_t * trace;
-	/*
-	float testDist = cam_idealdist->value;
-	trace = gEngfuncs.PM_TraceLine(realOrigin, Vector(realOrigin.x, realOrigin.y, realOrigin.z + cam_idealdist->value), 0, 2, -1);
+	Vector startPos = realOrigin + Vector(realViewOrg[0], realViewOrg[1], 72.0f);
+	Vector endPos = Vector(realOrigin.x + realViewOrg[0], realOrigin.y + realViewOrg[1], realOrigin.z + 500);
+	trace = gEngfuncs.PM_TraceLine(startPos, endPos, 1, 2, -1);
 
+	float traceDist = trace->endpos.z - (realOrigin.z + 72);
+	cam_idealdist->value -= (cam_idealdist->value - traceDist) * (.25);
 
-	if (trace->inopen){
-		while (trace->inopen){
-			testDist -= 5;
-			trace = gEngfuncs.PM_TraceLine(realOrigin, Vector(realOrigin.x, realOrigin.y, realOrigin.z + testDist), 0, 2, -1);
-		}
-		cam_idealdist->value = testDist - 5;
-	}
-	else{
-		trace = gEngfuncs.PM_TraceLine(realOrigin, Vector(realOrigin.x, realOrigin.y, realOrigin.z + cam_idealdist->value + 6), 0, 2, -1);
-		if (!trace->inopen){
-			cam_idealdist->value += 1;
-		}
-	}
-	*/
-
-	trace = gEngfuncs.PM_TraceLine(realOrigin, Vector(realOrigin.x, realOrigin.y, realOrigin.z + 500), 1, 1, -1);
-	cam_idealdist->value -= (cam_idealdist->value - (trace->endpos.z - realOrigin.z)) * (.25);
-
-
+	
 
 	camAngles[PITCH] = cam_idealpitch->value;
 	camAngles[YAW] = cam_idealyaw->value;

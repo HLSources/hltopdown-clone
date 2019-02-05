@@ -72,6 +72,8 @@ extern cvar_t	*cl_vsmoothing;
 #define CAM_MODE_FOCUS		2
 
 vec3_t realOrigin;
+float realViewOrg[3];
+float camOffset[3];
 
 vec3_t		v_origin, v_angles, v_cl_angles, v_sim_org, v_lastAngles;
 float		v_frametime, v_lastDistance;	
@@ -516,7 +518,6 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 		ent = gEngfuncs.GetLocalPlayer();
 	}
 
-	realOrigin = ent->origin;
 
 	// view is the weapon model (only visible from inside body )
 	view = gEngfuncs.GetViewModel();
@@ -644,9 +645,24 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 
 		}
 
+		//Calculations and setting externs for in_camera.cpp
+		realOrigin = ent->origin;
 
-		pparams->vieworg[0] -= mouse_pos_extern[1] * .05;
-		pparams->vieworg[1] -= mouse_pos_extern[0] * .05;
+		//Check if the new camera position is in the wall
+		//TODO: make a better system that traces a line from the camera position to where it wants to go
+		pmtrace_t * trace;
+		trace = gEngfuncs.PM_TraceLine(ent->origin + Vector(float(-mouse_pos_extern[1] * .05), float(-mouse_pos_extern[0] * .05), 72.0f), ent->origin + Vector(float(-mouse_pos_extern[1] * .05), float(-mouse_pos_extern[0] * .05), 500.0f), 1, 2, -1);
+		if (!trace->startsolid){
+			camOffset[0] = mouse_pos_extern[1] * .05;
+			camOffset[1] = mouse_pos_extern[0] * .05;
+
+			realViewOrg[0] = -mouse_pos_extern[1] * .05;
+			realViewOrg[1] = -mouse_pos_extern[0] * .05;
+			realViewOrg[2] = 0;
+		}
+
+		pparams->vieworg[0] -= camOffset[0];
+		pparams->vieworg[1] -= camOffset[1];
 	}
 	
 	// Give gun our viewangles
