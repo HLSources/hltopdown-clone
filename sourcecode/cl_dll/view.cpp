@@ -55,6 +55,7 @@ extern engine_studio_api_t IEngineStudio;
 extern kbutton_t	in_mlook;
 
 extern float mouse_pos_extern[2];
+extern cvar_t	*cam_idealdist;
 
 /*
 The view is allowed to move slightly from it's true position for bobbing,
@@ -650,16 +651,21 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 
 		//Check if the new camera position is in the wall
 		//TODO: make a better system that traces a line from the camera position to where it wants to go
-		pmtrace_t * trace;
-		trace = gEngfuncs.PM_TraceLine(ent->origin + Vector(float(-mouse_pos_extern[1] * .05), float(-mouse_pos_extern[0] * .05), 72.0f), ent->origin + Vector(float(-mouse_pos_extern[1] * .05), float(-mouse_pos_extern[0] * .05), 500.0f), 1, 2, -1);
-		if (!trace->startsolid){
-			camOffset[0] = mouse_pos_extern[1] * .05;
-			camOffset[1] = mouse_pos_extern[0] * .05;
+		Vector startPoint = ent->origin + Vector(0.0f, 0.0f, cam_idealdist->value);
+		Vector mousePos = Vector(-mouse_pos_extern[1], -mouse_pos_extern[0], cam_idealdist->value);
+		pmtrace_t * camTrace = gEngfuncs.PM_TraceLine(startPoint, ent->origin + mousePos, 1, 2, -1);
 
-			realViewOrg[0] = -mouse_pos_extern[1] * .05;
-			realViewOrg[1] = -mouse_pos_extern[0] * .05;
-			realViewOrg[2] = 0;
-		}
+		//pmtrace_t * trace;
+		//trace = gEngfuncs.PM_TraceLine(ent->origin + Vector(float(-mouse_pos_extern[1] * .05), float(-mouse_pos_extern[0] * .05), 72.0f), ent->origin + Vector(-mouse_pos_extern[1] * .05, -mouse_pos_extern[0] * .05, 500.0), 1, 2, -1);
+
+		//if (!trace->startsolid){
+		camOffset[0] = startPoint.x - (camTrace->endpos.x - (mousePos.Normalize().x * 8));//mouse_pos_extern[1] * .05;
+		camOffset[1] = startPoint.y - (camTrace->endpos.y - (mousePos.Normalize().y * 8));//mouse_pos_extern[0] * .05;
+
+		realViewOrg[0] = startPoint.x - (camTrace->endpos.x - (mousePos.Normalize().x * 8));//-mouse_pos_extern[1] * .05;
+		realViewOrg[1] = startPoint.y - (camTrace->endpos.y - (mousePos.Normalize().y * 8));//-mouse_pos_extern[0] * .05;
+		realViewOrg[2] = 0;
+		//}
 
 		pparams->vieworg[0] -= camOffset[0];
 		pparams->vieworg[1] -= camOffset[1];

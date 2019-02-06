@@ -549,15 +549,21 @@ void IN_MouseMove ( float frametime, usercmd_t *cmd)
 
 		//viewangles[YAW] -= m_yaw->value * mouse_x;
 
+		//Get mouse pos and normalize it to be sent to view.cpp
 		POINT mouse_pos;
 		GetCursorPos(&mouse_pos);
-		mouse_pos.x -= ScreenWidth / 2;
-		mouse_pos.y -= ScreenHeight / 2;
 
 		mouse_pos_extern[0] = mouse_pos.x;
 		mouse_pos_extern[1] = mouse_pos.y;
+		mouse_pos_extern[0] /= ScreenWidth / 2;
+		mouse_pos_extern[1] /= ScreenHeight / 2;
+		mouse_pos_extern[0] -= 1;
+		mouse_pos_extern[1] -= 1;
+		mouse_pos_extern[0] *= 27;
+		mouse_pos_extern[1] *= 27;
 
-		viewangles[YAW] = -atan2(double(mouse_pos.y * (M_PI / 180)), double(mouse_pos.x * (M_PI / 180))) * (180/M_PI) - 90; //I don't know why I have to negate the value and subtract 90, it just works that way.
+
+		viewangles[YAW] = -atan2(double(mouse_pos_extern[1] * (M_PI / 180)), double(mouse_pos_extern[0] * (M_PI / 180))) * (180 / M_PI) - 90; //I don't know why I have to negate the value and subtract 90, it just works that way.
 
 
 		if ( (in_mlook.state & 1) && !(in_strafe.state & 1))
