@@ -2,7 +2,7 @@
 //  These are key/value pairs.  Certain mods will use different settings.
 //
 game "Half-Life: Top-Down"
-startmap "c0a0"
+startmap "c1a0"
 trainmap "t0a0"
 mpentity "info_player_deathmatch"
 gamedll "dlls\hl.dll"
