@@ -443,20 +443,26 @@ void CCrossbow::FireBolt()
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.75;
 }
 
+#ifdef CLIENT_DLL
+extern float offSetFactor;
+#endif
 
 void CCrossbow::SecondaryAttack()
 {
-	if ( m_pPlayer->pev->fov != 0 )
+
+#ifdef CLIENT_DLL
+	if (offSetFactor != 1)
 	{
-		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 0; // 0 means reset to default fov
+		offSetFactor = 1;
 		m_fInZoom = 0;
 	}
-	else if ( m_pPlayer->pev->fov != 20 )
+	else if (offSetFactor != 5)
 	{
-		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 20;
+		offSetFactor = 5;
 		m_fInZoom = 1;
 	}
-	
+#endif
+
 	pev->nextthink = UTIL_WeaponTimeBase() + 0.1;
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.0;
 }

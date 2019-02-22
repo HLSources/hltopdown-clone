@@ -4256,11 +4256,11 @@ void CBasePlayer :: EnableControl(BOOL fControl)
 //=========================================================
 Vector CBasePlayer :: GetAutoaimVector( float flDelta )
 {
-	if (g_iSkillLevel == SKILL_HARD)
-	{
-		UTIL_MakeVectors( pev->v_angle + pev->punchangle );
-		return gpGlobals->v_forward;
-	}
+	//if (g_iSkillLevel == SKILL_HARD)
+	//{
+	//	UTIL_MakeVectors( pev->v_angle + pev->punchangle );
+	//	return gpGlobals->v_forward;
+	//}
 
 	Vector vecSrc = GetGunPosition( );
 	float flDist = 8192;
@@ -4307,28 +4307,20 @@ Vector CBasePlayer :: GetAutoaimVector( float flDelta )
 	
 	// always use non-sticky autoaim
 	// UNDONE: use sever variable to chose!
-	if (0 || g_iSkillLevel == SKILL_EASY)
-	{
-		m_vecAutoAim = m_vecAutoAim + angles; //* 0.67  * 0.33
-	}
-	else
-	{
-		m_vecAutoAim = angles * 0.9;
-	}
+
+	m_vecAutoAim = m_vecAutoAim + angles; //* 0.67  * 0.33
+
 
 	// m_vecAutoAim = m_vecAutoAim * 0.99;
 
-	// Don't send across network if sv_aim is 0
-	if ( g_psv_aim->value != 0 )
+
+	if ( m_vecAutoAim.x != m_lastx ||
+		 m_vecAutoAim.y != m_lasty )
 	{
-		if ( m_vecAutoAim.x != m_lastx ||
-			 m_vecAutoAim.y != m_lasty )
-		{
-			SET_CROSSHAIRANGLE( edict(), -m_vecAutoAim.x, m_vecAutoAim.y );
-			
-			m_lastx = m_vecAutoAim.x;
-			m_lasty = m_vecAutoAim.y;
-		}
+		SET_CROSSHAIRANGLE( edict(), -m_vecAutoAim.x, m_vecAutoAim.y );
+		
+		m_lastx = m_vecAutoAim.x;
+		m_lasty = m_vecAutoAim.y;
 	}
 
 	// ALERT( at_console, "%f %f\n", angles.x, angles.y );

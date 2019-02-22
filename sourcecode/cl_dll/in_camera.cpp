@@ -66,6 +66,10 @@ cvar_t	*c_minyaw;
 cvar_t	*c_maxdistance;
 cvar_t	*c_mindistance;
 
+cvar_t	*cam_minDist;
+cvar_t	*cam_maxDist;
+cvar_t	*cam_smooth;
+
 extern float camYaw;
 
 // pitch, yaw, dist
@@ -159,6 +163,7 @@ typedef struct
 
 extern trace_t SV_ClipMoveToEntity(edict_t *ent, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end);
 
+
 void CL_DLLEXPORT CAM_Think(void)
 {
 	//	RecClCamThink();
@@ -200,19 +205,27 @@ void CL_DLLEXPORT CAM_Think(void)
 	}
 #endif
 
-	pmtrace_t * trace;
-	Vector startPos = realOrigin + Vector(realViewOrg[0], realViewOrg[1], 72.0f);
-	Vector endPos = Vector(realOrigin.x + realViewOrg[0], realOrigin.y + realViewOrg[1], realOrigin.z + 500);
-	trace = gEngfuncs.PM_TraceLine(startPos, endPos, 1, 2, -1);
-
-	float traceDist = trace->endpos.z - (realOrigin.z + 72);
-	cam_idealdist->value -= (cam_idealdist->value - traceDist) * (.25);
-
-	
+	if (cam_contain->value == 0){
+		cam_idealdist->value = cam_maxDist->value;
+	}
+	else{
+		pmtrace_t * trace;
+		Vector startPos = realOrigin + Vector(realViewOrg[0], realViewOrg[1], cam_minDist->value);
+		Vector endPos = realOrigin + Vector(realViewOrg[0], realViewOrg[1], cam_maxDist->value);//Vector(realOrigin.x + realViewOrg[0], realOrigin.y + realViewOrg[1], realOrigin.z + cam_maxDist->value);
+		trace = gEngfuncs.PM_TraceLine(startPos, endPos, 1, 2, -1);
+		float traceDist = trace->endpos.z - (realOrigin.z + 25);	//Have to add 25 because for whatever reason the trace puts the camera a bit above the object
+		if (cam_smooth->value != 0){
+			cam_idealdist->value -= (cam_idealdist->value - traceDist) * (.25);
+		}
+		else{
+			cam_idealdist->value = traceDist;
+		}
+	}
 
 	camAngles[PITCH] = cam_idealpitch->value;
 	camAngles[YAW] = cam_idealyaw->value;
 	dist = cam_idealdist->value;
+
 	//
 	//movement of the camera with the mouse
 	//
@@ -502,24 +515,30 @@ void CAM_Init(void)
 	gEngfuncs.pfnAddCommand("+camdistance", CAM_StartDistance);
 	gEngfuncs.pfnAddCommand("-camdistance", CAM_EndDistance);
 	gEngfuncs.pfnAddCommand("snapto", CAM_ToggleSnapto);
-	cam_command				= gEngfuncs.pfnRegisterVariable ( "cam_command", "1", 0 );	 // tells camera to go to thirdperson
-	cam_snapto				= gEngfuncs.pfnRegisterVariable ( "cam_snapto", "0", 0 );	 // snap to thirdperson view
-	cam_idealyaw			= gEngfuncs.pfnRegisterVariable ( "cam_idealyaw", "0", 0 );	 // thirdperson yaw
-	cam_idealpitch			= gEngfuncs.pfnRegisterVariable ( "cam_idealpitch", "90", 0 );	 // thirperson pitch
-	cam_idealdist			= gEngfuncs.pfnRegisterVariable ( "cam_idealdist", "100", 0 );	 // thirdperson distance
-	cam_contain				= gEngfuncs.pfnRegisterVariable ( "cam_contain", "0", 0 );	// contain camera to world
+	cam_command = gEngfuncs.pfnRegisterVariable("cam_command", "1", 0);	 // tells camera to go to thirdperson
+	cam_snapto = gEngfuncs.pfnRegisterVariable("cam_snapto", "0", 0);	 // snap to thirdperson view
+	cam_idealyaw = gEngfuncs.pfnRegisterVariable("cam_idealyaw", "0", 0);	 // thirdperson yaw
+	cam_idealpitch = gEngfuncs.pfnRegisterVariable("cam_idealpitch", "90", 0);	 // thirperson pitch
+	cam_idealdist = gEngfuncs.pfnRegisterVariable("cam_idealdist", "100", 0);	 // thirdperson distance
 
-	c_maxpitch				= gEngfuncs.pfnRegisterVariable ( "c_maxpitch", "90.0", 0 );
-	c_minpitch				= gEngfuncs.pfnRegisterVariable ( "c_minpitch", "0.0", 0 );
-	c_maxyaw				= gEngfuncs.pfnRegisterVariable ( "c_maxyaw",   "135.0", 0 );
-	c_minyaw				= gEngfuncs.pfnRegisterVariable ( "c_minyaw",   "-135.0", 0 );
-	c_maxdistance			= gEngfuncs.pfnRegisterVariable ( "c_maxdistance",   "200.0", 0 );
-	c_mindistance			= gEngfuncs.pfnRegisterVariable ( "c_mindistance",   "30.0", 0 );
+	cam_contain = gEngfuncs.pfnRegisterVariable("cam_contain", "1", FCVAR_ARCHIVE);	// contain camera to world (previously unused/broken, repurposed for top-down stuff)
+
+	c_maxpitch = gEngfuncs.pfnRegisterVariable("c_maxpitch", "90.0", 0);
+	c_minpitch = gEngfuncs.pfnRegisterVariable("c_minpitch", "0.0", 0);
+	c_maxyaw = gEngfuncs.pfnRegisterVariable("c_maxyaw", "135.0", 0);
+	c_minyaw = gEngfuncs.pfnRegisterVariable("c_minyaw", "-135.0", 0);
+	c_maxdistance = gEngfuncs.pfnRegisterVariable("c_maxdistance", "200.0", 0);
+	c_mindistance = gEngfuncs.pfnRegisterVariable("c_mindistance", "30.0", 0);
+
+	cam_minDist = gEngfuncs.pfnRegisterVariable("cam_minDist", "72", FCVAR_ARCHIVE);
+	cam_maxDist = gEngfuncs.pfnRegisterVariable("cam_maxDist", "250", FCVAR_ARCHIVE);	 //Max dist if dynamic, normal distance if fixed
+	cam_smooth = gEngfuncs.pfnRegisterVariable("cam_smooth", "1", FCVAR_ARCHIVE);	 // smooth camea movement
 }
 
 
 void CAM_ClearStates(void)
 {
+
 	vec3_t viewangles;
 
 	gEngfuncs.GetViewAngles((float *)viewangles);

@@ -1047,8 +1047,6 @@ void PM_WalkMove ()
 	pmtrace_t trace;
 	
 	// Copy movement amounts
-	fmove = pmove->cmd.forwardmove;
-	smove = pmove->cmd.sidemove;
 	
 
 	fmove = (pmove->cmd.forwardmove * (cos(pmove->cmd.viewangles[YAW] * (M_PI / 180)))) - (pmove->cmd.sidemove * (sin(pmove->cmd.viewangles[YAW] * (M_PI / 180))));
@@ -2119,6 +2117,8 @@ void PM_LadderMove( physent_t *pLadder )
 
 		AngleVectors( pmove->angles, vpn, v_right, NULL );
 
+		float fmove = 0;
+		float smove = 0;
 		if ( pmove->flags & FL_DUCKING )
 		{
 			flSpeed *= PLAYER_DUCKING_MULTIPLIER;
@@ -2126,20 +2126,22 @@ void PM_LadderMove( physent_t *pLadder )
 
 		if ( pmove->cmd.buttons & IN_BACK )
 		{
-			forward -= flSpeed;
+			fmove -= flSpeed;
 		}
 		if ( pmove->cmd.buttons & IN_FORWARD )
 		{
-			forward += flSpeed;
+			fmove += flSpeed;
 		}
 		if ( pmove->cmd.buttons & IN_MOVELEFT )
 		{
-			right -= flSpeed;
+			smove -= flSpeed;
 		}
 		if ( pmove->cmd.buttons & IN_MOVERIGHT )
 		{
-			right += flSpeed;
+			smove += flSpeed;
 		}
+		forward = (fmove * (cos(pmove->cmd.viewangles[YAW] * (M_PI / 180)))) - (smove * (sin(pmove->cmd.viewangles[YAW] * (M_PI / 180))));
+		right = (fmove * (sin(pmove->cmd.viewangles[YAW] * (M_PI / 180)))) + (smove * (cos(pmove->cmd.viewangles[YAW] * (M_PI / 180))));
 
 		if ( pmove->cmd.buttons & IN_JUMP )
 		{
