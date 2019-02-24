@@ -9,6 +9,7 @@ $scale 1.0
 $bodygroup "body"
 {
 	studio "player_template_biped(No_Head)1"
+	studio "gordon_scientist_SCI3_Template_Biped1(Headless_Body)"
 }
 $bodygroup "head"
 {

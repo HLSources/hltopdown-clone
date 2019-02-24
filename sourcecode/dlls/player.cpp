@@ -2605,6 +2605,13 @@ void CBasePlayer :: UpdatePlayerSound ( void )
 
 void CBasePlayer::PostThink()
 {
+	if ((pev->weapons & (1 << WEAPON_SUIT))){
+		pev->body = 0;
+	}
+	else{
+		pev->body = 1;
+	}
+
 	ALERT(at_console, m_szAnimExtention);
 	if ( g_fGameOver )
 		goto pt_end;         // intermission or finale
@@ -3001,6 +3008,7 @@ void CBasePlayer :: Precache( void )
 		} 
 	}
 
+
 	// SOUNDS / MODELS ARE PRECACHED in ClientPrecache() (game specific)
 	// because they need to precache before any clients have connected
 
@@ -3105,6 +3113,12 @@ int CBasePlayer::Restore( CRestore &restore )
 	//			Barring that, we clear it out here instead of using the incorrect restored time value.
 	m_flNextAttack = UTIL_WeaponTimeBase();
 #endif
+	if ((pev->weapons & (1 << WEAPON_SUIT))){
+		pev->body = 0;
+	}
+	else{
+		pev->body = 1;
+	}
 	return status;
 }
 
@@ -3772,6 +3786,12 @@ int CBasePlayer::AddPlayerItem( CBasePlayerItem *pItem )
 			SwitchWeapon( pItem );
 		}
 
+		if ((pev->weapons & (1 << WEAPON_SUIT))){
+			pev->body = 0;
+		}
+		else{
+			pev->body = 1;
+		}
 		return TRUE;
 	}
 	else if (gEvilImpulse101)
@@ -4736,7 +4756,6 @@ LINK_ENTITY_TO_CLASS( monster_hevsuit_dead, CDeadHEV );
 void CDeadHEV :: Spawn( void )
 {
 	PRECACHE_MODEL("models/player.mdl");
-	PRECACHE_MODEL("models/background.mdl");
 	SET_MODEL(ENT(pev), "models/player.mdl");
 
 	pev->effects		= 0;
@@ -4746,7 +4765,6 @@ void CDeadHEV :: Spawn( void )
 	m_bloodColor		= BLOOD_COLOR_RED;
 
 	pev->sequence = LookupSequence( m_szPoses[m_iPose] );
-
 	if (pev->sequence == -1)
 	{
 		ALERT ( at_console, "Dead hevsuit with bad pose\n" );
