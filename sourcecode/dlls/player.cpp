@@ -116,7 +116,8 @@ TYPEDESCRIPTION	CBasePlayer::m_playerSaveData[] =
 
 	DEFINE_FIELD( CBasePlayer, m_pTank, FIELD_EHANDLE ),
 	DEFINE_FIELD( CBasePlayer, m_iHideHUD, FIELD_INTEGER ),
-	DEFINE_FIELD( CBasePlayer, m_iFOV, FIELD_INTEGER ),
+	DEFINE_FIELD(CBasePlayer, m_iFOV, FIELD_INTEGER),
+	DEFINE_ARRAY(CBasePlayer, m_szAnimExtention, FIELD_CHARACTER, 32)
 	
 	//DEFINE_FIELD( CBasePlayer, m_fDeadTime, FIELD_FLOAT ), // only used in multiplayer games
 	//DEFINE_FIELD( CBasePlayer, m_fGameHUDInitialized, FIELD_INTEGER ), // only used in multiplayer games
@@ -945,7 +946,6 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 	pev->nextthink = gpGlobals->time + 0.1;
 }
 
-
 // Set the activity based on an event or current state
 void CBasePlayer::SetAnimation( PLAYER_ANIM playerAnim )
 {
@@ -991,6 +991,21 @@ void CBasePlayer::SetAnimation( PLAYER_ANIM playerAnim )
 			break;
 		}
 		break;
+	case PLAYER_RELOAD:
+		switch (m_Activity)
+		{
+		case ACT_HOVER:
+		case ACT_SWIM:
+		case ACT_HOP:
+		case ACT_LEAP:
+		case ACT_DIESIMPLE:
+			m_IdealActivity = m_Activity;
+			break;
+		default:
+			m_IdealActivity = ACT_RELOAD;
+			break;
+		}
+		break;
 	case PLAYER_IDLE:
 	case PLAYER_WALK:
 		if ( !FBitSet( pev->flags, FL_ONGROUND ) && (m_Activity == ACT_HOP || m_Activity == ACT_LEAP) )	// Still jumping
@@ -1010,7 +1025,6 @@ void CBasePlayer::SetAnimation( PLAYER_ANIM playerAnim )
 		}
 		break;
 	}
-
 	switch (m_IdealActivity)
 	{
 	case ACT_HOVER:
@@ -1039,7 +1053,7 @@ void CBasePlayer::SetAnimation( PLAYER_ANIM playerAnim )
 			strcpy( szAnim, "crouch_shoot_" );
 		else
 			strcpy( szAnim, "ref_shoot_" );
-		strcat( szAnim, m_szAnimExtention );
+		strcat(szAnim, m_szAnimExtention);
 		animDesired = LookupSequence( szAnim );
 		if (animDesired == -1)
 			animDesired = 0;
@@ -1059,9 +1073,34 @@ void CBasePlayer::SetAnimation( PLAYER_ANIM playerAnim )
 		pev->sequence		= animDesired;
 		ResetSequenceInfo( );
 		break;
+	case ACT_RELOAD:
+		if (FBitSet(pev->flags, FL_DUCKING))	// crouching
+			strcpy(szAnim, "reload_");
+		else
+			strcpy(szAnim, "reload_");
+		strcat(szAnim, m_szAnimExtention);
+		animDesired = LookupSequence(szAnim);//szAnim
+		if (animDesired == -1)
+			animDesired = 0;
+
+		if (pev->sequence != animDesired || !m_fSequenceLoops)
+		{
+			pev->frame = 0;
+		}
+
+		if (!m_fSequenceLoops)
+		{
+			pev->effects |= EF_NOINTERP;
+		}
+
+		m_Activity = m_IdealActivity;
+
+		pev->sequence = animDesired;
+		ResetSequenceInfo();
+		break;
 
 	case ACT_WALK:
-		if (m_Activity != ACT_RANGE_ATTACK1 || m_fSequenceFinished)
+		if ((m_Activity != ACT_RANGE_ATTACK1 && m_Activity != ACT_RELOAD) || m_fSequenceFinished)
 		{
 			if ( FBitSet( pev->flags, FL_DUCKING ) )	// crouching
 				strcpy( szAnim, "crouch_aim_" );
@@ -1114,6 +1153,7 @@ void CBasePlayer::SetAnimation( PLAYER_ANIM playerAnim )
 	// Reset to first frame of desired animation
 	pev->sequence		= animDesired;
 	pev->frame			= 0;
+
 	ResetSequenceInfo( );
 }
 
@@ -2565,6 +2605,7 @@ void CBasePlayer :: UpdatePlayerSound ( void )
 
 void CBasePlayer::PostThink()
 {
+	ALERT(at_console, m_szAnimExtention);
 	if ( g_fGameOver )
 		goto pt_end;         // intermission or finale
 
@@ -2641,9 +2682,9 @@ void CBasePlayer::PostThink()
 	}
 
 	// select the proper animation for the player character	
-	if ( IsAlive() )
+	if (IsAlive())
 	{
-		if (!pev->velocity.x && !pev->velocity.y)
+		if (!pev->velocity.x && !pev->velocity.y )
 			SetAnimation( PLAYER_IDLE );
 		else if ((pev->velocity.x || pev->velocity.y) && (FBitSet(pev->flags, FL_ONGROUND)))
 			SetAnimation( PLAYER_WALK );
@@ -2937,6 +2978,7 @@ void CBasePlayer::Spawn( void )
 	
 	m_flNextChatTime = gpGlobals->time;
 
+
 	g_pGameRules->PlayerSpawn( this );
 }
 
@@ -3005,6 +3047,7 @@ void CBasePlayer::RenewItems(void)
 
 int CBasePlayer::Restore( CRestore &restore )
 {
+
 	if ( !CBaseMonster::Restore(restore) )
 		return 0;
 
@@ -3062,10 +3105,8 @@ int CBasePlayer::Restore( CRestore &restore )
 	//			Barring that, we clear it out here instead of using the incorrect restored time value.
 	m_flNextAttack = UTIL_WeaponTimeBase();
 #endif
-
 	return status;
 }
-
 
 
 void CBasePlayer::SelectNextItem( int iItem )
