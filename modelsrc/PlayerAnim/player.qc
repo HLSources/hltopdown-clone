@@ -573,3 +573,51 @@ $sequence "reload_c_onehanded" {
 	{ event 5004 4 "items/9mmclip2.wav"}
 	{ event 5004 31 "items/9mmclip1.wav"}
 }
+$sequence "reload_python" {
+	"anims\reload_python"
+	"anims\reload_python"
+	blend XR -50 35
+	fps 25
+	{ event 5004 32 "weapons/357_reload1.wav"}
+}
+$sequence "reload_c_python" {
+	"anims\reload_c_python"
+	"anims\reload_c_python"
+	blend XR -50 35
+	fps 25
+	{ event 5004 32 "weapons/357_reload1.wav"}
+}
+$sequence "reload_mp5" {
+	"anims\reload_mp5"
+	"anims\reload_mp5"
+	blend XR -50 35
+	fps 25
+	{ event 5004 5 "items/cliprelease1.wav"}
+	{ event 5004 32 "items/clipinsert1.wav"}
+}
+$sequence "reload_c_mp5" {
+	"anims\reload_mp5"
+	"anims\reload_mp5"
+	blend XR -50 35
+	fps 25
+	{ event 5004 5 "items/cliprelease1.wav"}
+	{ event 5004 32 "items/clipinsert1.wav"}
+}
+$sequence "reload_shotgun" {
+	"anims\reload_shotgun"
+	"anims\reload_shotgun"
+	blend XR -50 35
+	fps 16
+}
+$sequence "reload_start_shotgun" {
+	"anims\reload_start_shotgun"
+	"anims\reload_start_shotgun"
+	blend XR -50 35
+	fps 12
+}
+$sequence "reload_c_shotgun" {
+	"anims\reload_shotgun"
+	"anims\reload_shotgun"
+	blend XR -50 35
+	fps 16
+}
