@@ -1075,7 +1075,7 @@ void CBasePlayer::SetAnimation( PLAYER_ANIM playerAnim )
 		break;
 	case ACT_RELOAD:
 		if (FBitSet(pev->flags, FL_DUCKING))	// crouching
-			strcpy(szAnim, "reload_");
+			strcpy(szAnim, "reload_c_");
 		else
 			strcpy(szAnim, "reload_");
 		strcat(szAnim, m_szAnimExtention);

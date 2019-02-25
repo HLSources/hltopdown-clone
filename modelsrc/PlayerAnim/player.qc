@@ -559,5 +559,17 @@ $sequence "deadtable" {
 }
 $sequence "reload_onehanded" {
 	"anims\reload_onehanded"
-	fps 12
+	"anims\reload_onehanded"
+	blend XR -50 35
+	fps 25
+	{ event 5004 4 "items/9mmclip2.wav"}
+	{ event 5004 31 "items/9mmclip1.wav"}
+}
+$sequence "reload_c_onehanded" {
+	"anims\reload_c_onehanded"
+	"anims\reload_c_onehanded"
+	blend XR -50 35
+	fps 25
+	{ event 5004 4 "items/9mmclip2.wav"}
+	{ event 5004 31 "items/9mmclip1.wav"}
 }
