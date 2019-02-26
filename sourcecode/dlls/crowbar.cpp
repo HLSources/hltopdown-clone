@@ -170,12 +170,16 @@ int CCrowbar::Swing( int fFirst )
 	int fDidHit = FALSE;
 
 	TraceResult tr;
+	TraceResult tr2;
 
 	UTIL_MakeVectors (m_pPlayer->pev->v_angle);
-	Vector vecSrc	= m_pPlayer->GetGunPosition( );
-	Vector vecEnd	= vecSrc + gpGlobals->v_forward * 32;
+	Vector vecSrc = m_pPlayer->GetGunPosition();
+	Vector vecEnd = vecSrc + gpGlobals->v_forward * 32;
+	if (FBitSet(m_pPlayer->pev->flags, FL_DUCKING)){
+		vecEnd = vecSrc - gpGlobals->v_up * 32;
+	}
 
-	UTIL_TraceLine( vecSrc, vecEnd, dont_ignore_monsters, ENT( m_pPlayer->pev ), &tr );
+	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(m_pPlayer->pev), &tr);
 
 #ifndef CLIENT_DLL
 	if ( tr.flFraction >= 1.0 )
@@ -198,7 +202,7 @@ int CCrowbar::Swing( int fFirst )
 	0.0, 0, 0.0 );
 
 
-	if ( tr.flFraction >= 1.0 )
+	if ( tr.flFraction >= 1.0)
 	{
 		if (fFirst)
 		{
@@ -225,6 +229,13 @@ int CCrowbar::Swing( int fFirst )
 		m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
 		
 #ifndef CLIENT_DLL
+		Vector hitAngle;
+		if (FBitSet(m_pPlayer->pev->flags, FL_DUCKING)){
+			hitAngle = -gpGlobals->v_up;
+		}
+		else{
+			hitAngle = gpGlobals->v_forward;
+		}
 
 		// hit
 		fDidHit = TRUE;
@@ -235,12 +246,12 @@ int CCrowbar::Swing( int fFirst )
 		if ( (m_flNextPrimaryAttack + 1 < UTIL_WeaponTimeBase() ) || g_pGameRules->IsMultiplayer() )
 		{
 			// first swing does full damage
-			pEntity->TraceAttack(m_pPlayer->pev, gSkillData.plrDmgCrowbar, gpGlobals->v_forward, &tr, DMG_CLUB ); 
+			pEntity->TraceAttack(m_pPlayer->pev, gSkillData.plrDmgCrowbar, hitAngle, &tr, DMG_CLUB ); 
 		}
 		else
 		{
 			// subsequent swings do half
-			pEntity->TraceAttack(m_pPlayer->pev, gSkillData.plrDmgCrowbar / 2, gpGlobals->v_forward, &tr, DMG_CLUB ); 
+			pEntity->TraceAttack(m_pPlayer->pev, gSkillData.plrDmgCrowbar / 2, hitAngle, &tr, DMG_CLUB ); 
 		}	
 		ApplyMultiDamage( m_pPlayer->pev, m_pPlayer->pev );
 

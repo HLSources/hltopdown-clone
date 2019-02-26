@@ -609,15 +609,21 @@ $sequence "reload_shotgun" {
 	blend XR -50 35
 	fps 16
 }
+$sequence "reload_c_shotgun" {
+	"anims\reload_shotgun"
+	"anims\reload_shotgun"
+	blend XR -50 35
+	fps 16
+}
 $sequence "reload_start_shotgun" {
 	"anims\reload_start_shotgun"
 	"anims\reload_start_shotgun"
 	blend XR -50 35
 	fps 12
 }
-$sequence "reload_c_shotgun" {
-	"anims\reload_shotgun"
-	"anims\reload_shotgun"
+$sequence "reload_start_c_shotgun" {
+	"anims\reload_start_shotgun"
+	"anims\reload_start_shotgun"
 	blend XR -50 35
-	fps 16
+	fps 12
 }
