@@ -176,7 +176,7 @@ int CCrowbar::Swing( int fFirst )
 	Vector vecSrc = m_pPlayer->GetGunPosition();
 	Vector vecEnd = vecSrc + gpGlobals->v_forward * 32;
 	if (FBitSet(m_pPlayer->pev->flags, FL_DUCKING)){
-		vecEnd = vecSrc - gpGlobals->v_up * 32;
+		vecEnd = vecSrc + ((-gpGlobals->v_up + gpGlobals->v_forward).Normalize()) * 32;
 	}
 
 	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(m_pPlayer->pev), &tr);
@@ -231,7 +231,7 @@ int CCrowbar::Swing( int fFirst )
 #ifndef CLIENT_DLL
 		Vector hitAngle;
 		if (FBitSet(m_pPlayer->pev->flags, FL_DUCKING)){
-			hitAngle = -gpGlobals->v_up;
+			hitAngle = ((-gpGlobals->v_up + gpGlobals->v_forward).Normalize());
 		}
 		else{
 			hitAngle = gpGlobals->v_forward;
