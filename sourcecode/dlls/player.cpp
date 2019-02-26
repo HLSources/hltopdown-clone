@@ -992,6 +992,7 @@ void CBasePlayer::SetAnimation( PLAYER_ANIM playerAnim )
 		}
 		break;
 	case PLAYER_RELOAD:
+	case PLAYER_RELOAD_START:
 		switch (m_Activity)
 		{
 		case ACT_HOVER:
@@ -1074,10 +1075,18 @@ void CBasePlayer::SetAnimation( PLAYER_ANIM playerAnim )
 		ResetSequenceInfo( );
 		break;
 	case ACT_RELOAD:
-		if (FBitSet(pev->flags, FL_DUCKING))	// crouching
-			strcpy(szAnim, "reload_c_");
-		else
-			strcpy(szAnim, "reload_");
+		if (playerAnim == PLAYER_RELOAD_START){
+			if (FBitSet(pev->flags, FL_DUCKING))	// crouching
+				strcpy(szAnim, "reload_start_c_");
+			else
+				strcpy(szAnim, "reload_start_");
+		}
+		else{
+			if (FBitSet(pev->flags, FL_DUCKING))	// crouching
+				strcpy(szAnim, "reload_c_");
+			else
+				strcpy(szAnim, "reload_");
+		}
 		strcat(szAnim, m_szAnimExtention);
 		animDesired = LookupSequence(szAnim);//szAnim
 		if (animDesired == -1)
