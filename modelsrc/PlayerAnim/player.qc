@@ -627,3 +627,15 @@ $sequence "reload_start_c_shotgun" {
 	blend XR -50 35
 	fps 12
 }
+$sequence "reload_rpg" {
+	"anims\reload_rpg"
+	"anims\reload_rpg"
+	blend XR -50 35
+	fps 30
+}
+$sequence "reload_c_rpg" {
+	"anims\reload_rpg"
+	"anims\reload_rpg"
+	blend XR -50 35
+	fps 30
+}
