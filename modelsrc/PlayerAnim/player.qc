@@ -639,3 +639,15 @@ $sequence "reload_c_rpg" {
 	blend XR -50 35
 	fps 30
 }
+$sequence "reload_bow" {
+	"anims\reload_bow"
+	"anims\reload_bow"
+	blend XR -50 35
+	fps 30
+}
+$sequence "reload_c_bow" {
+	"anims\reload_bow"
+	"anims\reload_bow"
+	blend XR -50 35
+	fps 30
+}
