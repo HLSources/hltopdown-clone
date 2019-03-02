@@ -387,7 +387,7 @@ Vector CBasePlayer :: GetGunPosition( )
 	Vector origin;
 	
 	origin = pev->origin + pev->view_ofs;
-
+	return EyePosition();
 	return origin;
 }
 

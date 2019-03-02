@@ -56,6 +56,7 @@ extern kbutton_t	in_mlook;
 
 extern float mouse_pos_extern[2];
 extern cvar_t	*cam_idealdist;
+extern cvar_t	*cam_minDist;
 
 
 extern cvar_t *cam_contain;
@@ -78,6 +79,8 @@ extern cvar_t	*cl_vsmoothing;
 vec3_t realOrigin;
 float realViewOrg[3];
 float camOffset[3];
+
+extern cvar_t *cam_lookahead;
 
 vec3_t		v_origin, v_angles, v_cl_angles, v_sim_org, v_lastAngles;
 float		v_frametime, v_lastDistance;	
@@ -656,29 +659,39 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 		realOrigin = ent->origin;
 		
 		if (cam_contain->value == 1){
-			Vector mousePos = Vector(-mouse_pos_extern[1], -mouse_pos_extern[0], cam_idealdist->value);
+			Vector mousePos = Vector(-mouse_pos_extern[1], -mouse_pos_extern[0], 0.0f);
 			//Check if the new camera position is in the wall
-			Vector startPoint = ent->origin + Vector(0.0f, 0.0f, cam_idealdist->value);
-			pmtrace_t * camTrace = gEngfuncs.PM_TraceLine(startPoint, ent->origin + mousePos, 1, 2, -1);
+			Vector startPoint;
+			if (cam_idealdist->value + 25 <= cam_minDist->value){
+				startPoint = ent->origin + Vector(0.0f, 0.0f, cam_idealdist->value);
+			}
+			else{
+				//if camera is inside the wall trace from the player's origin
+				startPoint = ent->origin;
+			}
 
-			camOffset[0] = startPoint.x - (camTrace->endpos.x - (mousePos.Normalize().x * 8));
-			camOffset[1] = startPoint.y - (camTrace->endpos.y - (mousePos.Normalize().y * 8));
+			pmtrace_t * camTrace = gEngfuncs.PM_TraceLine(startPoint, startPoint + mousePos * offSetFactor * cam_lookahead->value, 1, 2, -1);
 
-			realViewOrg[0] = startPoint.x - (camTrace->endpos.x - (mousePos.Normalize().x * 8));
-			realViewOrg[1] = startPoint.y - (camTrace->endpos.y - (mousePos.Normalize().y * 8));
+			//TODO: fix division
+
+			camOffset[0] = camTrace->endpos.x - startPoint.x;
+			camOffset[1] = camTrace->endpos.y - startPoint.y;
+
+			realViewOrg[0] = camTrace->endpos.x - startPoint.x;
+			realViewOrg[1] = camTrace->endpos.y - startPoint.y;
 			realViewOrg[2] = 0;
 		}
 		else{
-			camOffset[0] = mouse_pos_extern[1];
-			camOffset[1] = mouse_pos_extern[0];
+			camOffset[0] = -mouse_pos_extern[1] * offSetFactor * cam_lookahead->value;
+			camOffset[1] = -mouse_pos_extern[0] * offSetFactor * cam_lookahead->value;
 
-			realViewOrg[0] = -mouse_pos_extern[1];
-			realViewOrg[1] = -mouse_pos_extern[0];
+			realViewOrg[0] = -mouse_pos_extern[1] * offSetFactor * cam_lookahead->value;
+			realViewOrg[1] = -mouse_pos_extern[0] * offSetFactor * cam_lookahead->value;
 			realViewOrg[2] = 0;
 		}
 
-		pparams->vieworg[0] -= camOffset[0] * offSetFactor;
-		pparams->vieworg[1] -= camOffset[1] * offSetFactor;
+		pparams->vieworg[0] += camOffset[0];
+		pparams->vieworg[1] += camOffset[1];
 	}
 	
 	// Give gun our viewangles

@@ -180,7 +180,7 @@ int CCrowbar::Swing( int fFirst )
 	}
 
 	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(m_pPlayer->pev), &tr);
-
+	
 #ifndef CLIENT_DLL
 	if ( tr.flFraction >= 1.0 )
 	{

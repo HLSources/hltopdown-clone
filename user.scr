@@ -32,7 +32,7 @@
 
 
 // Half-Life User Info Configuration Layout Script (stores last settings chosen, too)
-// File generated:  Wed Feb 27 18:34:30 AM
+// File generated:  Fri Mar 01 22:07:06 AM
 //
 //
 // Cvar	-	Setting
@@ -45,7 +45,7 @@ DESCRIPTION INFO_OPTIONS
 	{
 		"Keep camera in bounds"
 		{ BOOL }
-		{ "0" }
+		{ "1" }
 	}
 
 	"cam_smooth"
@@ -59,14 +59,21 @@ DESCRIPTION INFO_OPTIONS
 	{
 		"Max Camera Height (250-1000)"
 		{ NUMBER 250.000000 1000.000000 }
-		{ "250.000000" }
+		{ "500.000000" }
 	}
 
 	"cam_minDist"
 	{
 		"Minimum Camera Height (0-500)"
 		{ NUMBER 0.000000 500.000000 }
-		{ "100.000000" }
+		{ "150.000000" }
+	}
+
+	"cam_lookahead"
+	{
+		"Look Ahead amount (0-5)"
+		{ NUMBER 0.000000 5.000000 }
+		{ "2.000000" }
 	}
 
 }

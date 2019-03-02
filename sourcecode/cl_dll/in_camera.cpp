@@ -69,6 +69,7 @@ cvar_t	*c_mindistance;
 cvar_t	*cam_minDist;
 cvar_t	*cam_maxDist;
 cvar_t	*cam_smooth;
+cvar_t	*cam_lookahead;
 
 extern float camYaw;
 
@@ -532,7 +533,9 @@ void CAM_Init(void)
 
 	cam_minDist = gEngfuncs.pfnRegisterVariable("cam_minDist", "72", FCVAR_ARCHIVE);
 	cam_maxDist = gEngfuncs.pfnRegisterVariable("cam_maxDist", "250", FCVAR_ARCHIVE);	 //Max dist if dynamic, normal distance if fixed
-	cam_smooth = gEngfuncs.pfnRegisterVariable("cam_smooth", "1", FCVAR_ARCHIVE);	 // smooth camea movement
+	cam_smooth = gEngfuncs.pfnRegisterVariable("cam_smooth", "1", FCVAR_ARCHIVE);	 // smooth camera movement
+	cam_lookahead = gEngfuncs.pfnRegisterVariable("cam_lookahead", "2", FCVAR_ARCHIVE);	 // amount to "look ahead" towards the mouse
+	
 }
 
 

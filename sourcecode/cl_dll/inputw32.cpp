@@ -559,12 +559,11 @@ void IN_MouseMove ( float frametime, usercmd_t *cmd)
 		mouse_pos_extern[1] /= ScreenHeight / 2;
 		mouse_pos_extern[0] -= 1;
 		mouse_pos_extern[1] -= 1;
-		mouse_pos_extern[0] *= 27;
-		mouse_pos_extern[1] *= 27;
-
 
 		viewangles[YAW] = -atan2(double(mouse_pos_extern[1] * (M_PI / 180)), double(mouse_pos_extern[0] * (M_PI / 180))) * (180 / M_PI) - 90; //I don't know why I have to negate the value and subtract 90, it just works that way.
 
+		mouse_pos_extern[0] *= 27;
+		mouse_pos_extern[1] *= 27;
 
 		if ( (in_mlook.state & 1) && !(in_strafe.state & 1))
 		{

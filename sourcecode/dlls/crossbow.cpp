@@ -487,7 +487,7 @@ void CCrossbow::Reload( void )
 
 void CCrossbow::WeaponIdle( void )
 {
-	m_pPlayer->GetAutoaimVector( AUTOAIM_2DEGREES );  // get the autoaim vector but ignore it;  used for autoaim crosshair in DM
+	m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );  // get the autoaim vector but ignore it;  used for autoaim crosshair in DM
 
 	ResetEmptySound( );
 	
